@@ -4,6 +4,7 @@ import { AuthDatasource } from "../../domain/datasources";
 import { RegisterUserDto } from "../../domain/dtos/auth";
 import { UserEntity } from "../../domain/entities";
 import { CustomError } from "../../domain/errors";
+import { UserMapper } from "../mappers";
 
 type HashFunction = (password: string) => string
 type CompareFunction = (password: string, hashed: string) => boolean
@@ -26,7 +27,8 @@ export class authDatasourceImpl implements AuthDatasource {
             const existsEmail = await UserModel.findOne({email: email})
 
             if(existsEmail) throw CustomError.badRequest('User already exists')
-
+                
+            //2 Encriptar la contraseña
             const encryptedPassword = this.hashpassword(password);
 
             const user = await UserModel.create({
@@ -37,20 +39,12 @@ export class authDatasourceImpl implements AuthDatasource {
 
             await user.save();
 
-            //2 Encriptar la contraseña
 
 
 
             //3 Mappear la respuesta a la entidad
-
-            return new UserEntity(
-                user.id, 
-                user.name, 
-                user.email, 
-                user.password, 
-                user.roles
-            )
-
+            return UserMapper.userEntityFromObject(user)
+ 
         } catch (error) {
             if(error instanceof CustomError)
                 throw error

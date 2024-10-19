@@ -4,6 +4,7 @@ import { AuthRepository } from "../../domain/repositories/auth.repository"
 import { CustomError } from "../../domain/errors"
 import { JwtAdapter } from "../../config"
 import { UserModel } from "../../data/mongodb/models"
+import { RegisterUser } from "../../domain/useCases/auth/register-user.useCase"
 
 export class AuthController {
 
@@ -29,15 +30,13 @@ export class AuthController {
             return 
         } 
         
-         this.authRepository.register(registerUserDto!)
-        .then( async user => {
-            //res.json(user)
-            res.json({
-                user,
-                token: await JwtAdapter.generateToken({ id: user.id})
+        new RegisterUser(this.authRepository)
+            .execute(registerUserDto!)
+            .then((data)=>{
+                res.status(200).json(data)
+            }).catch(err=> {
+                this.handleError(err, res)
             })
-        } )
-        .catch(error => this.handleError(error, res))
     }
 
     loginUser = (req: Request, res: Response) => {

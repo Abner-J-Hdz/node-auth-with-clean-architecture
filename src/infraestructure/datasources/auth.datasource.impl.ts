@@ -2,6 +2,7 @@ import { BcryptAdapter } from "../../config";
 import { UserModel } from "../../data/mongodb/models";
 import { AuthDatasource } from "../../domain/datasources";
 import { RegisterUserDto } from "../../domain/dtos/auth";
+import { LoginUserDto } from "../../domain/dtos/auth/loginUser.dto";
 import { UserEntity } from "../../domain/entities";
 import { CustomError } from "../../domain/errors";
 import { UserMapper } from "../mappers";
@@ -16,8 +17,12 @@ export class authDatasourceImpl implements AuthDatasource {
         private readonly comparePassword: CompareFunction = BcryptAdapter.compare
     ) {}
 
-    async register(registerUserDto: RegisterUserDto): Promise<UserEntity> {
 
+    async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+        throw new Error("Method not implemented.");
+    }
+
+    async register(registerUserDto: RegisterUserDto): Promise<UserEntity> {
 
         const { name, email, password }  = registerUserDto
 

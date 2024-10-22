@@ -2,9 +2,10 @@ import { Request, Response } from "express"
 import { RegisterUserDto } from "../../domain/dtos/auth"
 import { AuthRepository } from "../../domain/repositories/auth.repository"
 import { CustomError } from "../../domain/errors"
-import { JwtAdapter } from "../../config"
 import { UserModel } from "../../data/mongodb/models"
 import { RegisterUser } from "../../domain/useCases/auth/register-user.useCase"
+import { LoginUserDto } from "../../domain/dtos/auth/loginUser.dto"
+import { LoginUser } from "../../domain/useCases/auth/login-user.useCase"
 
 export class AuthController {
 
@@ -40,7 +41,23 @@ export class AuthController {
     }
 
     loginUser = (req: Request, res: Response) => {
-        res.status(200).json('Login user controller')
+
+        const [error, loginUserDto] = LoginUserDto.create(req.body)
+
+        if(error){
+            res.status(400).json(error)
+            return 
+        } 
+
+        new LoginUser(this.authRepository)
+            .execute(loginUserDto!)
+            .then(data => {
+                res.status(200).json(data)
+            })
+            .catch(err => { 
+                this.handleError(err, res)
+            })
+
     }
 
     getUser = (req: Request, res: Response) => {

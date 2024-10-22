@@ -40,7 +40,11 @@ export class RegisterUser implements RegisterUserUseCase{
 
         return {
             token,
-            user
+            user:{
+                id: user.id,
+                email: user.email,
+                name: user.name
+            }
         }
     }
 
